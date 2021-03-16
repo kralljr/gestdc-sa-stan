@@ -1,1 +1,6 @@
-Stan code for GESTDC-SA
+# Stan code for GESTDC-SA
+
+- stan-sa-inform-scale-y-newpriors-cent.stan: Centered, cauchy priors
+- stan-sa-inform-scale-y.stan: Inverse-gamma (similar to previous BSA)
+- stan-sa-joint-diffL.stan: Joint with differing number of sources
+- stan-sa-joint.stan: Joint with same sources
