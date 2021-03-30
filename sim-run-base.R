@@ -6,6 +6,7 @@ date <- commandArgs(TRUE)[1]
 typesim1 <- commandArgs(TRUE)[2]
 iter1 <- as.numeric(commandArgs(TRUE)[3])
 notes1 <- commandArgs(TRUE)[4]
+keeps1 <- commandArgs(TRUE)[5]
 
 resdir <- paste0("results-", date)
 filen <- paste0("informprior-", date, "-", typesim1, ".RData")
@@ -45,7 +46,7 @@ stanres <- runstan(notes = notes1,
                    meansd = meansd, 
                    typesim = typesim1,
                    sderr = 0.01, cores = 2,
-                   chains = 1, keepall = T, fp = file.path(resdir, filen),
+                   chains = 1, keepall = keeps1, fp = file.path(resdir, filen),
                    control = list(adapt_delta = 0.99, max_treedepth = 15))
 save(stanres, file = (file.path(resdir, filen)))
 
