@@ -52,8 +52,8 @@ save(stanres, file = (file.path(resdir, filen)))
 
 ## Plot results
 #load(here("rcode-sim/results-2dec20/inform-2dec20-local3.RData"))
-plots <- plotstan(prof = prof, meansd = meansd, typesim =  typesim1,
-                  stanres = stanres, dirname = resdir, pdf = T)
+# plots <- plotstan(prof = prof, meansd = meansd, typesim =  typesim1,
+#                   stanres = stanres, dirname = resdir, pdf = T)
 
 # Other diagnostics
 # library(bayesplot)
