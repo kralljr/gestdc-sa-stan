@@ -34,7 +34,7 @@ library(magrittr)
 data(prof)
 data(meansd)
 
-
+cores1 <- parallel::detectCores()
 
 # Run
 stanres <- runstan(notes = notes1, 
@@ -45,7 +45,7 @@ stanres <- runstan(notes = notes1,
                    prof = prof, 
                    meansd = meansd, 
                    typesim = typesim1,
-                   sderr = 0.01, cores = 2,
+                   sderr = 0.01, cores = cores1,
                    chains = 1, keepall = keeps1, fp = file.path(resdir, filen),
                    control = list(adapt_delta = 0.99, max_treedepth = 15))
 save(stanres, file = (file.path(resdir, filen)))
