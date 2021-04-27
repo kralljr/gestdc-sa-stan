@@ -82,8 +82,11 @@ model {
   
 // Tighter mean as suggested by Gelman somewheere?
 
-  sigmag ~ inv_gamma(2, 0.5) ;
-  sigmaeps ~ inv_gamma(5, 20) ;
+ // sigmag ~ inv_gamma(2, 0.5) ;
+//  sigmaeps ~ inv_gamma(5, 20) ;
+  
+    sigmag ~ inv_gamma(0.01, 0.01) ;
+  sigmaeps ~ inv_gamma(0.01, 0.01) ;
   
   
   for(l in 1 : L) {
