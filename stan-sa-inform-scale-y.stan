@@ -51,9 +51,10 @@ parameters {
 
 transformed parameters {
   vector<lower=0>[LB] vF; // Source profile/ free elements
-
-
-  vF = exp(nvF * 1.8 + -0.5);
+  
+  // Sample F lognormal (Nikolov 2011)
+   vF = exp(nvF * 0.588 + -0.5);
+  //vF = exp(nvF * 1.8 + -0.5);
   
 }
 
@@ -75,7 +76,6 @@ model {
   }
   
   
-  // Sample F lognormal (Nikolov 2011)
   nvF ~ normal(0, 1);
   
   
