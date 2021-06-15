@@ -7,11 +7,18 @@ typesim1 <- commandArgs(TRUE)[2]
 iter1 <- as.numeric(commandArgs(TRUE)[3])
 notes1 <- commandArgs(TRUE)[4]
 keeps1 <- commandArgs(TRUE)[5]
+run <- as.numeric(commandArgs(TRUE)[6])
 
 resdir <- paste0("results-", date)
 filen <- paste0("informprior-", date, "-", typesim1, ".RData")
 
 library(here)
+
+# load seeds
+set.seed(37474)
+seeds <- sample(seq(1, 100000), 100 * 3, replace = T)
+seeds <- matrix(seeds, nrow = 100)
+seeds <- seeds[run, ]
 
 # make folder if doesn't exist
 if(!(resdir %in% list.files())) {
@@ -45,7 +52,8 @@ stanres <- runstan(notes = notes1,
                    prof = prof, 
                    meansd = meansd, 
                    typesim = typesim1,
-                   sderr = 0.01, cores = cores1,
+                   sderr = 0.01, seeds = seeds,
+                   cores = cores1,
                    chains = 1, keepall = keeps1, fp = file.path(resdir, filen),
                    control = list(adapt_delta = 0.99, max_treedepth = 15))
 save(stanres, file = (file.path(resdir, filen)))
