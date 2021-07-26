@@ -78,8 +78,9 @@ transformed data {
 
 parameters {
   // Ambient
-  matrix<lower=0>[Na, La] Ga; 
-  matrix<lower=0>[Nl, Ll] Gl; 
+
+  matrix[Na, La] lG0a; 
+  matrix[Nl, Ll] lG0l; 
   //row_vector<lower=0>[L] G[N]; // Source contributions
   //matrix[Na, La] lG0a; // Needed for matrix computation
   //matrix<lower=0>[L, B] Fstar; // Scale to 1 source profiles
@@ -87,7 +88,7 @@ parameters {
 
   
   
-  row_vector<lower=0>[La] muga;  // G mean
+  row_vector[La] muga;  // G mean
   row_vector<lower=0>[La] sigmaga; // G SD
   row_vector<lower=0>[Pa] sigmaepsa; // standard deviations
   
@@ -96,7 +97,7 @@ parameters {
 
 
 
-  row_vector<lower=0>[Ll] mugl;  // G mean
+  row_vector[Ll] mugl;  // G mean
   row_vector<lower=0>[Ll] sigmagl; // G SD
   row_vector<lower=0>[Pl] sigmaepsl; // standard deviations
   
@@ -106,6 +107,9 @@ parameters {
 
 
 transformed parameters {
+    matrix<lower=0>[Na, La] Ga; 
+  matrix<lower=0>[Nl, Ll] Gl; 
+
   vector<lower=0>[LBl1] vFl; // Source profile/ free elements
     vector<lower=0>[LBa] vFa; // Source profile/ free elements
 
@@ -114,10 +118,14 @@ transformed parameters {
     vFa = exp(nvFa * 0.588 + -0.5);
 
   //vF = exp(nvF * 1.8 + -0.5);
-  
+    Ga = exp(rep_matrix(muga, Na) + rep_matrix(sqrt(sigmaga), Na) .* lG0a);
+  Gl = exp(rep_matrix(mugl, Nl) + rep_matrix(sqrt(sigmagl), Nl) .* lG0l);
+
 }
 
 model {
+  vector[NLa] vGa = (to_vector(lG0a)); // Source contributions
+  vector[NLl] vGl = (to_vector(lG0l)); // Source contributions
 
     // Temp things: to vectors
   //vector[NLa] vGa = (to_vector(lG0a)); // Source contributions
@@ -170,25 +178,13 @@ model {
   sigmaga ~ inv_gamma(0.01, 0.01) ;
   sigmaepsa ~ inv_gamma(0.01, 0.01) ;
   
-  
-  
-  for(l in 1 : La) {
-        muga[l] ~ normal(2, 5) T[0,];
-    for(n in 1 : Na) {
-  
-          Ga[n,l] ~ normal(muga[l], sigmaga[l]);
-      
-    }
-  } 
+  muga ~ normal(0, 10); // maybe too vague, try sd =5?
+  mugl ~ normal(0, 10); // maybe too vague, try sd =5?
 
+  
+  vGa ~ normal(0, 1);
+  vGl ~ normal(0, 1);
 
-  for(l in 1 : Ll) {
-        mugl[l] ~ normal(2, 5) T[0,];
-    for(n in 1 : Nl) {
-          Gl[n,l] ~ normal(mugl[l], sigmagl[l]);
-      
-    }
-  } 
     
   // Mean y
   meanlya = to_vector((Ga * Fhold1a));

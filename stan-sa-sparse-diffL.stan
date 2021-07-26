@@ -78,8 +78,9 @@ transformed data {
 
 parameters {
   // Ambient
-  matrix<lower=0>[Na, La] Ga; 
-  matrix<lower=0>[Nl, Ll] Gl; 
+
+  matrix[Na, La] lGa; 
+  matrix[Nl, Ll] lGl; 
   //row_vector<lower=0>[L] G[N]; // Source contributions
   //matrix[Na, La] lG0a; // Needed for matrix computation
   //matrix<lower=0>[L, B] Fstar; // Scale to 1 source profiles
@@ -101,12 +102,19 @@ parameters {
   row_vector<lower=0>[Pl] sigmaepsl; // standard deviations
   
 
-  vector[LBl2] dev; //deviations
-  
+  vector[LBl2] ndev; //deviations
+  vector[LBl2] lam; //inc deviations
+
 }
 
 
 transformed parameters {
+  vector[LBl2] dev; //deviations
+    vector[LBl2] sigmadev; //deviations
+
+    matrix<lower=0>[Na, La] Ga; 
+      matrix<lower=0>[Nl, Ll] Gl; 
+
   vector<lower=0>[LBl1] vFl; // Source profile/ free elements
     vector<lower=0>[LBa] vFa; // Source profile/ free elements
     vector<lower=0>[LBa] alpha; // Source profile/ free elements
@@ -115,13 +123,18 @@ transformed parameters {
         // value of ambient plus deviations
         alpha[l] = vFa[matchamb[l]] + dev[l];
     }
+    sigmadev = lam^2 * 0.5^2;
+    dev = ndev .* sigmadev;
+    
 
   // Sample F lognormal (Nikolov 2011)
    vFl = exp(nvFl * 0.588 + -0.5);
     vFa = exp(nvFa * 0.588 + -0.5);
 
   //vF = exp(nvF * 1.8 + -0.5);
-  
+    Ga = exp(rep_matrix(muga, Na) + rep_matrix(sqrt(sigmaga), Na) .* lG0a);
+  Gl = exp(rep_matrix(mugl, Nl) + rep_matrix(sqrt(sigmagl), Nl) .* lG0l);
+
 }
 
 model {
@@ -139,6 +152,9 @@ model {
   
   vector[NPl] meanlyl; // Mean column order for ly
   matrix[Ll, Pl] Fhold1l; 
+
+  vector[NLa] vGa = (to_vector(lG0a)); // Source contributions
+  vector[NLl] vGl = (to_vector(lG0l)); // Source contributions
 
 
   int k = 1;
@@ -168,45 +184,34 @@ model {
         }
       }
       
-  dev ~ cauchy(0, 0.001); // 0.001 is scale of smaller values
-  
+  //dev ~ cauchy(0, 0.001); // 0.001 is scale of smaller values
+  ndev ~ normal(0, 1);
+  lam ~ bernoulli(0.2);
   
   nvFa ~ normal(0, 1);
   nvFl ~ normal(0, 1);
 
-  
-
-  sigmagl ~ inv_gamma(0.01, 0.01) ;
-  sigmaepsl ~ inv_gamma(0.01, 0.01) ;
-  sigmaga ~ inv_gamma(0.01, 0.01) ;
-  sigmaepsa ~ inv_gamma(0.01, 0.01) ;
-  
-  
-  
-  for(l in 1 : La) {
-        muga[l] ~ normal(2, 5) T[0,];
-    for(n in 1 : Na) {
-  
-          Ga[n,l] ~ normal(muga[l], sigmaga[l]);
-      
-    }
-  } 
-
-
-  for(l in 1 : Ll) {
-        mugl[l] ~ normal(2, 5) T[0,];
-    for(n in 1 : Nl) {
-          Gl[n,l] ~ normal(mugl[l], sigmagl[l]);
-      
-    }
-  } 
     
+  sigmaga ~ inv_gamma(0.01, 0.01) ;
+  sigmagl ~ inv_gamma(0.01, 0.01) ;
+  
+  sigmaepsl ~ inv_gamma(0.01, 0.01) ;
+  sigmaepsa~ inv_gamma(0.01, 0.01) ;
+  
+  muga ~ normal(0, 10); // maybe too vague, try sd =5?
+  mugl ~ normal(0, 10); // maybe too vague, try sd =5?
+  
+  // Dist for G
+  vGl ~ normal(0, 1);
+  vGa ~ normal(0, 1);
+
+  
   // Mean y
   meanlya = to_vector((Ga * Fhold1a));
   // Dist y
   vya ~ normal(meanlya, Vsigmaepsa);
   
-  
+
         
   // Mean y
 
