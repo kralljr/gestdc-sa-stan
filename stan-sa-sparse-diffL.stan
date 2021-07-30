@@ -56,6 +56,7 @@ transformed data {
   vector<lower=0>[Nl * Pl] vyl;  // Chemical constituent data matrix, column major order
   matrix[Ll, Pl] Fholdl = zeromatl + onematl; // F holding matrix to create profiles: 1s and 0s in correct places
   
+  int<lower=0> LBdiff;
   
   
   NPa = Na * Pa;
@@ -71,6 +72,9 @@ transformed data {
   NLl = Nl * Ll;
   
   vyl = to_vector(yl);
+  
+  // Those in ambient (for w)
+  LBdiff = LBl2 - LBl1;
 }
 
 
@@ -102,27 +106,24 @@ parameters {
   row_vector<lower=0>[Pl] sigmaepsl; // standard deviations
   
 
-  vector[LBl2] nws; //deviations
-  vector<lower=0>[LBl2] lam; //inc deviations, bound below for half cauchyhttps://discourse.mc-stan.org/t/half-normal-half-cauchy-and-half-t/17314/5
+  vector[LBdiff] nws; //deviations
+  vector<lower=0>[LBdiff] lam; //inc deviations, bound below for half cauchyhttps://discourse.mc-stan.org/t/half-normal-half-cauchy-and-half-t/17314/5
 
 }
 
 
 transformed parameters {
-  vector[LBl2] ws; //deviations
-    vector[LBl2] sigmadev; //deviations
+  vector[LBdiff] ws; //deviations
+    vector[LBdiff] sigmadev; //deviations
 
     matrix<lower=0>[Na, La] Ga; 
       matrix<lower=0>[Nl, Ll] Gl; 
 
   vector<lower=0>[LBl1] vFl; // Source profile/ free elements
     vector<lower=0>[LBa] vFa; // Source profile/ free elements
-    vector<lower=0>[LBa] alpha; // Source profile/ free elements
 
-    for(l in 1 : LBl2) {
-        // value of ambient plus deviations
-        alpha[l] = vFa[matchamb[l]] + ws[l];
-    }
+    
+     
     
     // lam is local shrinkage, 0.15 global
     sigmadev = lam * 0.15;
@@ -161,6 +162,7 @@ model {
 
 
   int k = 1;
+  int m = 1;
 
 
   // Loop over sources, otherwise cannot do matrix on normal
@@ -178,8 +180,9 @@ model {
         // If belongs to ambient
         if(matchamb[l] > 0) {
           
-           Fhold1l[posrl[l], poscl[l]] = alpha[l];  // columns iterate slower matchamb[(b-1) * Ll + l]
+           Fhold1l[posrl[l], poscl[l]] = vFa[matchamb[l]] + ws[m];  // columns iterate slower matchamb[(b-1) * Ll + l]
         // If does not belong to ambient
+           m += 1;
         } else {
           Fhold1l[posrl[l], poscl[l]] = vFl[k];
           // Add one to k
