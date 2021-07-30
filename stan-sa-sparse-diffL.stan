@@ -79,8 +79,8 @@ transformed data {
 parameters {
   // Ambient
 
-  matrix[Na, La] lGa; 
-  matrix[Nl, Ll] lGl; 
+  matrix[Na, La] lG0a; 
+  matrix[Nl, Ll] lG0l; 
   //row_vector<lower=0>[L] G[N]; // Source contributions
   //matrix[Na, La] lG0a; // Needed for matrix computation
   //matrix<lower=0>[L, B] Fstar; // Scale to 1 source profiles
@@ -102,14 +102,14 @@ parameters {
   row_vector<lower=0>[Pl] sigmaepsl; // standard deviations
   
 
-  vector[LBl2] ndev; //deviations
-  vector[LBl2] lam; //inc deviations
+  vector[LBl2] nws; //deviations
+  vector<lower=0>[LBl2] lam; //inc deviations, bound below for half cauchyhttps://discourse.mc-stan.org/t/half-normal-half-cauchy-and-half-t/17314/5
 
 }
 
 
 transformed parameters {
-  vector[LBl2] dev; //deviations
+  vector[LBl2] ws; //deviations
     vector[LBl2] sigmadev; //deviations
 
     matrix<lower=0>[Na, La] Ga; 
@@ -121,10 +121,13 @@ transformed parameters {
 
     for(l in 1 : LBl2) {
         // value of ambient plus deviations
-        alpha[l] = vFa[matchamb[l]] + dev[l];
+        alpha[l] = vFa[matchamb[l]] + ws[l];
     }
-    sigmadev = lam^2 * 0.5^2;
-    dev = ndev .* sigmadev;
+    
+    // lam is local shrinkage, 0.15 global
+    sigmadev = lam * 0.15;
+    // deviations (carv)
+    ws = nws .* sigmadev;
     
 
   // Sample F lognormal (Nikolov 2011)
@@ -185,8 +188,10 @@ model {
       }
       
   //dev ~ cauchy(0, 0.001); // 0.001 is scale of smaller values
-  ndev ~ normal(0, 1);
-  lam ~ bernoulli(0.2);
+  // nws centered deviations
+  nws ~ normal(0, 1);
+  //lam ~ bernoulli(0.2); 
+  lam ~ cauchy(0, 1); 
   
   nvFa ~ normal(0, 1);
   nvFl ~ normal(0, 1);
