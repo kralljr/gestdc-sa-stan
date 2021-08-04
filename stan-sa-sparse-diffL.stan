@@ -145,14 +145,14 @@ model {
 
     // Temp things: to vectors
   //vector[NLa] vGa = (to_vector(lG0a)); // Source contributions
-  vector[NPa] Vsigmaepsa = to_vector(rep_matrix(sigmaepsa, Na)); // sigma column order for ly
+  vector[NPa] Vsigmaepsa = sqrt(to_vector(rep_matrix(sigmaepsa, Na))); // sigma column order for ly
   
   vector[NPa] meanlya; // Mean column order for ly
   matrix[La, Pa] Fhold1a; 
 
   // Temp things: to vectors
   //vector[NLl] vGl = (to_vector(lG0l)); // Source contributions
-  vector[NPl] Vsigmaepsl = to_vector(rep_matrix(sigmaepsl, Nl)); // sigma column order for ly
+  vector[NPl] Vsigmaepsl = sqrt(to_vector(rep_matrix(sigmaepsl, Nl))); // sigma column order for ly
   
   vector[NPl] meanlyl; // Mean column order for ly
   matrix[Ll, Pl] Fhold1l; 

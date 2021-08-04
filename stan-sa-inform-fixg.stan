@@ -68,7 +68,7 @@ transformed parameters {
 model {
   // Temp things: to vectors
   vector[NL] vG = (to_vector(lG0)); // Source contributions
-  vector[NP] Vsigmaeps = to_vector(rep_matrix(sigmaeps, N)); // sigma column order for ly
+  vector[NP] Vsigmaeps = sqrt(to_vector(rep_matrix(sigmaeps, N))); // sigma column order for ly
   
   vector[NP] meanly; // Mean column order for ly
   matrix[L, P] Fhold1; 
