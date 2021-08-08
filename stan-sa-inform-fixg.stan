@@ -54,7 +54,7 @@ transformed parameters {
   vector<lower=0>[LB] vF; // Source profile/ free elements
   
   // Sample F lognormal (Nikolov 2011)
-   vF = exp(nvF * 0.588 + -0.5);
+   vF = exp(nvF * 0.767  + -0.5);
   //vF = exp(nvF * 1.8 + -0.5);
   
   // G lognormalm lG0 normal
@@ -93,7 +93,7 @@ model {
     sigmag ~ inv_gamma(0.01, 0.01) ;
   sigmaeps ~ inv_gamma(0.01, 0.01) ;
   
-  mug ~ normal(0, 10); // maybe too vague, try sd =5?
+  mug ~ normal(0, 3.16); // maybe too vague, try sd =5?
 
   
   // Dist for G

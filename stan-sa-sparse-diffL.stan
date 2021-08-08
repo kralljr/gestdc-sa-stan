@@ -132,8 +132,8 @@ transformed parameters {
     
 
   // Sample F lognormal (Nikolov 2011)
-   vFl = exp(nvFl * 0.588 + -0.5);
-    vFa = exp(nvFa * 0.588 + -0.5);
+   vFl = exp(nvFl * 0.767 + -0.5);
+    vFa = exp(nvFa * 0.767  + -0.5);
 
   //vF = exp(nvF * 1.8 + -0.5);
     Ga = exp(rep_matrix(muga, Na) + rep_matrix(sqrt(sigmaga), Na) .* lG0a);
@@ -206,8 +206,8 @@ model {
   sigmaepsl ~ inv_gamma(0.01, 0.01) ;
   sigmaepsa~ inv_gamma(0.01, 0.01) ;
   
-  muga ~ normal(0, 10); // maybe too vague, try sd =5?
-  mugl ~ normal(0, 10); // maybe too vague, try sd =5?
+  muga ~ normal(0, 3.16); // maybe too vague, try sd =5?
+  mugl ~ normal(0, 3.16); // maybe too vague, try sd =5?
   
   // Dist for G
   vGl ~ normal(0, 1);
