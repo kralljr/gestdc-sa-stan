@@ -43,8 +43,8 @@ parameters {
   
   
   row_vector[L] mug;  // G mean
-  row_vector<lower=0>[L] sigmag; // G SD
-  row_vector<lower=0>[P] sigmaeps; // standard deviations
+  row_vector<lower=0>[L] sigmag; // G variances
+  row_vector<lower=0>[P] sigmaeps; // variances
 }
 
 
@@ -85,13 +85,13 @@ model {
   
   
   
-// Tighter mean as suggested by Gelman somewheere?
+// Gelman 2006 Bayesian analysis ?
 
- // sigmag ~ inv_gamma(2, 0.5) ;
-//  sigmaeps ~ inv_gamma(5, 20) ;
+//    sigmag ~ inv_gamma(0.01, 0.01) ;
+//  sigmaeps ~ inv_gamma(0.01, 0.01) ;
   
-    sigmag ~ inv_gamma(0.01, 0.01) ;
-  sigmaeps ~ inv_gamma(0.01, 0.01) ;
+  sigmag ~ normal(0, 10) ;
+  sigmaeps ~ normal(0, 10) ;
   
   mug ~ normal(0, 3.16); // maybe too vague, try sd =5?
 

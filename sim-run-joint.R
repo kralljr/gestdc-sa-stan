@@ -10,12 +10,12 @@
 # run <- as.numeric(commandArgs(TRUE)[6])
 
 
-date <- "30jul21"
+date <- "31jul21"
 typesim1 <- "local3"
 iter1 <- 100000
-notes1 <- "local3 joint: fix length vfl"
+notes1 <- "local3 joint: try new run"
 keeps1 <- "all"
-run <- 1
+run <- 2
 
 resdir <- paste0("results-", date)
 filen <- paste0("joint-", date, "-", typesim1, ".RData")
@@ -71,7 +71,7 @@ stanres <- runstan(notes = notes1,
                    sderr = NULL, seeds = seeds,
                    cores = cores1,
                    chains = 1, keep = keeps1, fp = file.path(resdir, filen), log1 = T,
-                   control = list(adapt_delta = 0.95, max_treedepth = 15), names = F)
+                   control = list(adapt_delta = 0.98, max_treedepth = 15), names = F)
 # for local 1: adapt_delta (target acccept increase) to 0.98
 save(stanres, file = (file.path(resdir, filen)))
 
@@ -86,7 +86,7 @@ save(stanres, file = (file.path(resdir, filen)))
 source("~/Documents/git/stansa/R/plot-res.R")
 
 # ambient/local1
-plotsL <- plotstan(prof = prof, meansd = meansd, typesim =  typesim1,
+plotsL <- plotstan(prof = prof, meansd = meansdlog, typesim =  typesim1,
                   stanres = stanres, dirname = resdir, pdf = T, hten = 350, wdbi = 20, typeplot = "local")
 
 plotsA <- plotstan(prof = prof, meansd = meansd, typesim =  typesim1,

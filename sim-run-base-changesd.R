@@ -10,10 +10,10 @@
 # run <- as.numeric(commandArgs(TRUE)[6])
 
 
-date <- "23jul21"
+date <- "16aug21"
 typesim1 <- "local1"
-iter1 <- 150000
-notes1 <- "local1 no Cl"
+iter1 <- 50000
+notes1 <- "halfN for var, large N"
 keeps1 <- "all"
 run <- 1
 
@@ -50,19 +50,13 @@ data(prof)
 data(meansd)
 data(meansdlog)
 
-# load new Cl
-gdc <- "~/Dropbox/GESTDC-SA"
-load(file.path(gdc, "data/prof-noCl.RData"))
-load(file.path(gdc, "data/meansd-noCl.RData"))
-load(file.path(gdc, "data/meansdlog-noCl.RData"))
-
 
 
 cores1 <- parallel::detectCores()
 
 # Run
 stanres <- runstan(notes = notes1,
-                   iter = iter1, N = 200,
+                   iter = iter1, N = 500,
                    #stancode = "https://raw.githubusercontent.com/kralljr/gestdc-sa-stan/main/stan-sa-inform-scale-y.stan",
                    stancode = "~/Documents/git/gestdc-sa-stan/stan-sa-inform-fixg.stan",
                    # refers to whether using ambient
@@ -72,8 +66,8 @@ stanres <- runstan(notes = notes1,
                    typesim = typesim1,
                    sderr = NULL, seeds = seeds,
                    cores = cores1,
-                   chains = 1, keep = keeps1, fp = file.path(resdir, filen), log1 = T,
-                   control = list(adapt_delta = 0.98, max_treedepth = 15), names = T)
+                   chains = 4, keep = keeps1, fp = file.path(resdir, filen), log1 = T,
+                   control = list(adapt_delta = 0.95, max_treedepth = 15), names = T)
 # for local 1: adapt_delta (target acccept increase) to 0.98
 save(stanres, file = (file.path(resdir, filen)))
 
@@ -85,7 +79,7 @@ save(stanres, file = (file.path(resdir, filen)))
 #                   stanres = stanres, dirname = resdir, pdf = T)
 
 # ambient/local1
-plots <- plotstan(prof = prof, meansd = meansd, typesim =  typesim1,
+plots <- plotstan(prof = prof, meansd = meansdlog, typesim =  typesim1,
                   stanres = stanres, dirname = resdir, pdf = T, hten = 350, wdbi = 20)
 
 
