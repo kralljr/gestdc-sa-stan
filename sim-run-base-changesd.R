@@ -13,7 +13,7 @@
 date <- "16aug21"
 typesim1 <- "local1"
 iter1 <- 50000
-notes1 <- "halfN for var, large N"
+notes1 <- "halfN for var, large N: 4 chains"
 keeps1 <- "all"
 run <- 1
 

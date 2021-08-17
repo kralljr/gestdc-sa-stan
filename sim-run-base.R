@@ -39,24 +39,31 @@ library(magrittr)
 
 # load simulation data
 data(prof)
-data(meansd)
+data(meansdlog)
 
 cores1 <- parallel::detectCores()
 
 # Run
 stanres <- runstan(notes = notes1, 
                    iter = iter1, N = 200,
-                   stancode = "https://raw.githubusercontent.com/kralljr/gestdc-sa-stan/main/stan-sa-inform-scale-y.stan",
+                   # stancode = "https://raw.githubusercontent.com/kralljr/gestdc-sa-stan/main/stan-sa-inform-scale-y.stan",
+                   stancode = "~/Documents/git/gestdc-sa-stan/stan-sa-inform-fixg.stan",
+                   
                    # refers to whether using ambient
                    stantype = "noninform",
                    prof = prof, 
-                   meansd = meansd, 
+                   meansd = meansdlog, 
                    typesim = typesim1,
-                   sderr = 0.01, seeds = seeds,
+                   sderr = NULL, seeds = seeds,
                    cores = cores1,
-                   chains = 1, keepall = keeps1, fp = file.path(resdir, filen),
-                   control = list(adapt_delta = 0.99, max_treedepth = 15))
+                   chains = 1, keep = keeps1, fp = file.path(resdir, filen), log1 = T,
+                   control = list(adapt_delta = 0.95, max_treedepth = 15), names = T)
 save(stanres, file = (file.path(resdir, filen)))
+
+plots <- plotstan(prof = prof, meansd = meansdlog, typesim =  typesim1,
+                  stanres = stanres, dirname = resdir, pdf = T, hten = 350, wdbi = 20)
+
+
 
 
 ## Plot results
