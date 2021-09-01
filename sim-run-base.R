@@ -60,8 +60,8 @@ stanres <- runstan(notes = notes1,
                    control = list(adapt_delta = 0.95, max_treedepth = 15), names = T)
 save(stanres, file = (file.path(resdir, filen)))
 
-plots <- plotstan(prof = prof, meansd = meansdlog, typesim =  typesim1,
-                  stanres = stanres, dirname = resdir, pdf = T, hten = 350, wdbi = 20)
+#plots <- plotstan(prof = prof, meansd = meansdlog, typesim =  typesim1,
+#                  stanres = stanres, dirname = resdir, pdf = T, hten = 350, wdbi = 20)
 
 
 
