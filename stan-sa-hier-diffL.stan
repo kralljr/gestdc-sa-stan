@@ -55,7 +55,7 @@ transformed data {
   int<lower=0> NLl; // length of G
   vector<lower=0>[Nl * Pl] vyl;  // Chemical constituent data matrix, column major order
   matrix[Ll, Pl] Fholdl = zeromatl + onematl; // F holding matrix to create profiles: 1s and 0s in correct places
-  
+  int LBld = LBl2 - LBl1; // free elements in ambient
   
   
   NPa = Na * Pa;
@@ -94,13 +94,15 @@ parameters {
   
   //matrix[Nl, Ll] lG0l; // Needed for matrix computation
   vector[LBl1] nvFl; // Source profile/ free elements not in ambient
-
+  vector[LBld] vFH; // hierarchical components
 
 
   row_vector[Ll] mugl;  // G mean
   row_vector<lower=0>[Ll] sigmagl; // G SD
   row_vector<lower=0>[Pl] sigmaepsl; // standard deviations
   
+  
+  real<lower=0> sigmaF;
 
   
 }
@@ -112,10 +114,12 @@ transformed parameters {
 
   vector<lower=0>[LBl1] vFl; // Source profile/ free elements
     vector<lower=0>[LBa] vFa; // Source profile/ free elements
+  //  vector<lower=0>[LBld] vFH; // Source profile, free elements hierarchical
 
   // Sample F lognormal (Nikolov 2011)
    vFl = exp(nvFl * 0.767 + -0.5);
     vFa = exp(nvFa * 0.767 + -0.5);
+    
 
   //vF = exp(nvF * 1.8 + -0.5);
     Ga = exp(rep_matrix(muga, Na) + rep_matrix(sqrt(sigmaga), Na) .* lG0a);
@@ -143,7 +147,7 @@ model {
 
 
   int k = 1;
-
+  int m = 1;
 
   // Loop over sources, otherwise cannot do matrix on normal
   Fhold1a = Fholda;
@@ -159,7 +163,9 @@ model {
         
         // If belongs to ambient
         if(matchamb[l] > 0) {
-           Fhold1l[posrl[l], poscl[l]] = vFa[matchamb[l]];  // columns iterate slower matchamb[(b-1) * Ll + l]
+           Fhold1l[posrl[l], poscl[l]] = vFH[m];  // columns iterate slower matchamb[(b-1) * Ll + l]
+           vFH ~ normal(vFa[matchamb[l]], sigmaF);
+           m += 1;
         // If does not belong to ambient
         } else {
           Fhold1l[posrl[l], poscl[l]] = vFl[k];
@@ -167,7 +173,6 @@ model {
           k += 1;
         }
       }
- 
 
   nvFa ~ normal(0, 1);
   nvFl ~ normal(0, 1);
@@ -181,6 +186,8 @@ model {
   sigmaepsl ~ normal(0, 2) ;
   sigmaga ~ normal(0, 10) ;
   sigmaepsa ~ normal(0, 2) ;
+  
+  sigmaF ~ normal(0, 2);
   
   muga ~ normal(0, 3.16); // maybe too vague, try sd =5?
   mugl ~ normal(0, 3.16); // maybe too vague, try sd =5?
