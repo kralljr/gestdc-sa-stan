@@ -90,10 +90,10 @@ model {
 //    sigmag ~ inv_gamma(0.01, 0.01) ;
 //  sigmaeps ~ inv_gamma(0.01, 0.01) ;
   
-  sigmag ~ normal(0, 1) ;
-  sigmaeps ~ normal(0, 1) ;
+  sigmag ~ normal(0, 10) ;
+  sigmaeps ~ normal(0, 2) ;
   
-  mug ~ normal(0, 1); // 
+  mug ~ normal(0, 3.16); // maybe too vague, try sd =5?
 
   
   // Dist for G
