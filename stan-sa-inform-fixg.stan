@@ -93,7 +93,7 @@ model {
   sigmag ~ normal(0, 10) ;
   sigmaeps ~ normal(0, 2) ;
   
-  mug ~ normal(0, 3.16); // maybe too vague, try sd =5?
+  mug ~ normal(0, 10); // maybe too vague, try sd =5?
 
   
   // Dist for G
