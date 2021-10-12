@@ -8,6 +8,7 @@ iter1 <- as.numeric(commandArgs(TRUE)[3])
 notes1 <- commandArgs(TRUE)[4]
 keeps1 <- commandArgs(TRUE)[5]
 run <- as.numeric(commandArgs(TRUE)[6])
+sampsize <- as.numeric(commandArgs(TRUE)[7])
 
 resdir <- paste0("results-", date)
 filen <- paste0("informprior-", date, "-", typesim1, ".RData")
@@ -45,7 +46,7 @@ cores1 <- parallel::detectCores()
 
 # Run
 stanres <- runstan(notes = notes1, 
-                   iter = iter1, N = 200,
+                   iter = iter1, N = sampsize,
                    # stancode = "https://raw.githubusercontent.com/kralljr/gestdc-sa-stan/main/stan-sa-inform-scale-y.stan",
                    stancode = "~/Documents/git/gestdc-sa-stan/stan-sa-inform-fixg.stan",
                    
